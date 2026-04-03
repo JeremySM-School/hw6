@@ -14,37 +14,55 @@ async function getOneJokeById(id) {
     return result.rows[0];
 }
 
-async function getJokesByType(type, setup = null, delivery = null) {
-    const queryText = `
-        SELECT * FROM jokebook 
-        WHERE type = $1 
-        AND ($2::text IS NULL OR setup = $2) 
-        AND ($3::text IS NULL OR delivery = $3)
-    `;
-    const values = [type, setup, delivery];
+
+async function getJokesByCategory(category, limit = null) {
+    let queryText = 'SELECT * FROM jokebook WHERE type = $1';
+    const values = [category];
+
+    if (limit) {
+        queryText += ' LIMIT $2';
+        values.push(limit);
+    }
+
     const result = await pool.query(queryText, values);
     return result.rows;
+}
+
+
+async function getCategories() {
+    const query = 'SELECT DISTINCT type FROM jokebook';
+    const result = await pool.query(query);
+    return result.rows.map(row => row.type);
 }
 
 async function deleteJokeById(id) {
     const query = 'DELETE FROM jokebook WHERE id = $1';
     const values = [id];
     const result = await pool.query(query, values);
-    return result.rowCount; // Returns how many rows were deleted
+    return result.rowCount;
 }
 
-async function addJoke(type, setup, delivery) {
+
+async function addJoke(category, setup, delivery) {
     const query = 'INSERT INTO jokebook (type, setup, delivery) VALUES ($1, $2, $3) RETURNING *';
-    const values = [type, setup, delivery];
+    const values = [category, setup, delivery];
     const result = await pool.query(query, values);
     return result.rows[0];
 }
 
 
+async function getRandomJoke() {
+    const query = 'SELECT * FROM jokebook ORDER BY RANDOM() LIMIT 1';
+    const result = await pool.query(query);
+    return result.rows[0];
+}
+
 module.exports = {
     fetchJokebook: getAllJokes,
     fetchJokeById: getOneJokeById,
-    fetchJokeByType: getJokesByType,
+    fetchJokeByCategory: getJokesByCategory,
+    getCategories: getCategories, 
+    getRandomJoke: getRandomJoke, 
     removejokebook: deleteJokeById,
-    createjokebook: addJoke 
+    createjokebook: addJoke       
 };

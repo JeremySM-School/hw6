@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jokebook Central</title>
+    <link rel="stylesheet" href="style.css"> </head>
+<body>
+    <h1>Jokebook Central</h1>
+
+    <section id="random-joke-section">
+        <h2>Joke of the Moment</h2>
+        <div id="random-joke-container">
+            <p id="random-setup">Loading a funny thought...</p>
+            <p id="random-delivery"></p>
+        </div>
+        <button id="new-random-btn">Get Another Random Joke</button>
+    </section>
+
+    <hr>
+
+    <section id="categories-section">
+        <h2>Explore Categories</h2>
+        <button id="view-categories-btn">Show All Categories</button>
+        <ul id="categories-list"></ul>
+    </section>
+
+    <hr>
+
+    <section id="search-section">
+        <h2>Find Jokes</h2>
+        <input type="text" id="category-input" placeholder="Enter category (e.g., funnyJoke)">
+        <button id="search-btn">Search</button>
+        <div id="jokes-display">
+            </div>
+    </section>
+
+    <hr>
+
+    <section id="add-joke-section">
+        <h2>Contribute a Joke</h2>
+        <form id="add-joke-form">
+            <input type="text" id="new-category" placeholder="Category" required><br>
+            <input type="text" id="new-setup" placeholder="Setup" required><br>
+            <input type="text" id="new-delivery" placeholder="Delivery" required><br>
+            <button type="submit">Add Joke</button>
+        </form>
+        <p id="form-feedback"></p>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>

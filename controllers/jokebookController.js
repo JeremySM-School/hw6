@@ -17,7 +17,7 @@ async function fetchJokebook(req, res) {
 }
 
 async function fetchJokeById(req, res) {
-    const { id } = req.params; 
+    const { id } = req.params;
     if (!id) return res.status(400).send('Bad Request: Missing joke ID');
 
     try {
@@ -29,18 +29,16 @@ async function fetchJokeById(req, res) {
     }
 }
 
-async function fetchJokeByType(req, res) {
-    const { type } = req.params;
-    const { setup, delivery } = req.query;
-
-    if (!type) return res.status(400).send('Bad Request: Missing joke type');
+async function fetchJokeByCategory(req, res) {
+    const { category } = req.params;
+    const { limit } = req.query;
 
     try {
-        const params = [type, setup, delivery].filter(p => p !== undefined);
-        const jokes = await model.fetchJokeByType(params);
+        const jokes = await model.fetchJokeByCategory(category, limit);
+        if (jokes.length === 0) return res.status(404).send('Category not found');
         res.json(jokes);
     } catch (err) {
-        handleServerError(res, err, 'Error fetching jokes by type:');
+        handleServerError(res, err, 'Error fetching category');
     }
 }
 
@@ -51,7 +49,7 @@ async function removejokebook(req, res) {
     try {
         const deletedCount = await model.removejokebook(id);
         if (deletedCount > 0) {
-            res.send(`Joke with id ${id} deleted successfully`); 
+            res.send(`Joke with id ${id} deleted successfully`);
         } else {
             res.status(404).send(`Joke with id ${id} not found`);
         }
@@ -61,23 +59,50 @@ async function removejokebook(req, res) {
 }
 
 async function createjokebook(req, res) {
-    const { type, setup, delivery } = req.body;
-    if (type && setup && delivery) {
+
+    const { category, setup, delivery } = req.body;
+
+    if (category && setup && delivery) {
         try {
-            const newJoke = await model.createjokebook(type, setup, delivery);
-            res.status(201).json(newJoke);
+            await model.createjokebook(category, setup, delivery);
+
+            const updatedList = await model.fetchJokeByCategory(category);
+            res.status(201).json(updatedList);
         } catch (err) {
             handleServerError(res, err, 'Error creating joke:');
         }
     } else {
+
         res.status(400).send('Bad Request: Missing required fields');
     }
 }
 
+async function fetchCategories(req, res) {
+    try {
+        const categories = await model.getCategories(); 
+        res.json(categories); 
+    } catch (err) {
+        handleServerError(res, err, 'Error fetching categories');
+    }
+}
+
+async function fetchRandomJoke(req, res) {
+    try {
+        const joke = await model.getRandomJoke(); 
+        res.json(joke); 
+    } catch (err) {
+        handleServerError(res, err, 'Error fetching random joke');
+    }
+}
+
+
+
 module.exports = {
     fetchJokebook,
     fetchJokeById,
-    fetchJokeByType,
+    fetchJokeByCategory,
+    fetchCategories, 
+    fetchRandomJoke, 
     removejokebook,
     createjokebook
 };
