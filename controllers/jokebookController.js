@@ -97,12 +97,10 @@ async function fetchRandomJoke(req, res) {
 
 
 
+
 module.exports = {
-    fetchJokebook,
-    fetchJokeById,
+    fetchCategories,
     fetchJokeByCategory,
-    fetchCategories, 
-    fetchRandomJoke, 
-    removejokebook,
-    createjokebook
+    fetchRandomJoke,
+    createJoke: createjokebook,
 };
